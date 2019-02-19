@@ -1,0 +1,8 @@
+abjuration:12 105 255
+illusion:92 0 216
+enchantment:30 255 32
+divination:180 180 180
+evocation:255 41 41
+transmutation:255 242 0
+necromancy:0 0 0
+conjuration:255 142 52
