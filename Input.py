@@ -15,7 +15,9 @@ class InputManager:
     @classmethod
     def manage_input(cls):
         if pygame.event.peek(pygame.QUIT):
-            pygame.display.quit();pygame.quit();sys.exit()
+            pygame.display.quit()
+            pygame.quit()
+            sys.exit()
         
         cls.filtered_input = [[],[],[],[],[]]
         for e in pygame.event.get():
