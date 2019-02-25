@@ -25,7 +25,7 @@ class CardLayout:
     def visualize(self,width):
         height = [i[0][0].get_height() for i in self.elements]
         height[0] += 10 #margin under spell level 
-        height[4] += 30 #padding of components
+        height[4] += 15 #padding of components
         height[6] += 15 #margin above description
         height[7] += 15 #margin above HL header
         height[9] += 30 #margin above PHB page
@@ -104,14 +104,15 @@ class CardDraw:
         cls.CR.blit(a,(d+10,0))
         
     @classmethod
-    def getLevel(cls,school,level,font,d=80):
+    def getLevel(cls,school,level,font):
+        d = sm.crunch[3]
         b = pygame.transform.scale(cls.icons[school],(d,d))
         c = font.render(level,1,(0,0,0))
         b.blit(c,((d-c.get_width())//2,(d-c.get_height())//2))
         return b
     
     @classmethod
-    def getCR(cls,rit,con,dim=(180,)*3):
+    def getCR(cls,rit,con,dim=(220,)*3):
         b = cls.CR.copy()
         x,y = b.get_size()
         if rit == 'no':
@@ -121,7 +122,8 @@ class CardDraw:
         return b
     
     @classmethod
-    def getComponents(cls,com,d=60):
+    def getComponents(cls,com):
+        d = sm.crunch[4]
         x = (cls.width-len(com)*d)//(len(com)+1)
         b = pygame.Surface((cls.width,d))
         b.fill((255,)*3)
@@ -137,7 +139,7 @@ class CardDraw:
         fonts = []
         for i in sm.fonts:
             fonts.append(pygame.font.SysFont(i[0],i[1]))
-        fonts[5].set_bold(True)
+        fonts[6].set_bold(True)
 
         l.add(0,cls.getLevel(info['school'],info['level'],fonts[0]))
         l.add(0,cls.getText(info['name'],fonts[1]),'RELATIVE','CENTER')#bigger
@@ -145,17 +147,17 @@ class CardDraw:
         l.add(2,cls.getText('Range: '+info['range'],fonts[2]))
         l.add(3,cls.getText('Duration: '+info['duration'],fonts[2]))
         l.add(2,cls.getCR(info['ritual'],info['concentration']),'RIGHT','CENTER')
-        l.add(4,cls.getComponents(info['components']),'CENTER','CENTER')
+        l.add(4,cls.getComponents(info['components']),'CENTER','BOTTOM')
         l.add(5,cls.getText(info['damage'],fonts[4]))
-        l.add(5,cls.getText(' '+info['type'],fonts[6]),'FLUSH','OFFSET')
-        l.add(6,cls.getText(info['description'],fonts[2]),'LEFT','BOTTOM')
-        l.add(7,cls.getText('At Higher Levels:',fonts[5]),'CENTER','BOTTOM')
-        l.add(8,cls.getText(info['higher'],fonts[2]))
+        l.add(5,cls.getText(' '+info['type'],fonts[5]),'FLUSH','OFFSET')
+        l.add(6,cls.getText(info['description'],fonts[2],sm.crunch[1]),'CENTER','BOTTOM')
+        l.add(7,cls.getText('At Higher Levels:',fonts[6]),'CENTER','BOTTOM')
+        l.add(8,cls.getText(info['higher'],fonts[2],sm.crunch[1]),'CENTER')
         l.add(9,cls.getText('PHB '+info['page'],fonts[2]),'RIGHT','BOTTOM')
 
     @classmethod
     def getText(cls,text,font,d=0):
-        if not d: d = cls.width
+        d = cls.width-d
         words = [i+' ' for i in text.split(' ')]
 
         line = words[0]

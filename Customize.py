@@ -5,7 +5,7 @@ class StyleManager:
     @classmethod
     def __init__(cls):
         f = open('layout_attributes.txt')
-        info = f.read().split('\n')
+        info = f.read().split('\n')[:-1]
         f.close()
         heads = [info.index(':element offset:'),info.index(':crunch:')]
 
@@ -65,14 +65,14 @@ class StyleManager:
     @classmethod
     def save(cls):
         print(cls.fonts,cls.offset,cls.crunch)
-        f = open('layout_attributes.txt',w)
-        f.write(':fonts:')
-        for i in self.fonts:
-            f.write(i[0]+' '+str(i[1]))
-        f.write(':element offset:')
-        for i in self.offset:
-            f.write(str(i[0])+' '+str(i[1]))
-        f.write(':crunch:')
-        for i in self.crunch:
-            f.write(str(i))
+        f = open('layout_attributes.txt','w')
+        f.write(':fonts:\n')
+        for i in cls.fonts:
+            f.write(i[0]+' '+str(i[1])+'\n')
+        f.write(':element offset:\n')
+        for i in cls.offset:
+            f.write(str(i[0])+' '+str(i[1])+'\n')
+        f.write(':crunch:\n')
+        for i in cls.crunch:
+            f.write(str(i)+'\n')
         f.close()

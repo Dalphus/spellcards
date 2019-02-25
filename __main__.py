@@ -6,7 +6,7 @@ pygame.init()
 im.__init__()
 sm.__init__()
 
-window = pygame.display.set_mode((350,600))
+window = pygame.display.set_mode((380,600))
 
 CardDraw.__init__(350)
 CardDraw.updateCR()
@@ -22,10 +22,11 @@ while im.manage_input():
         CardDraw.updateCR()
         CardDraw.addElements(style,content.info)
         
-        window.fill((255,255,255))
+        window.fill(CardDraw.colors[content.info['school']])
         draw = style.visualize(sm.crunch[0])
-        window.blit(draw,(0,0))
+        window.blit(draw,(15,15))
         pygame.display.flip()
 
+pygame.image.save(window,'Inflict_Wounds.jpeg')
 pygame.display.quit()
 pygame.quit()

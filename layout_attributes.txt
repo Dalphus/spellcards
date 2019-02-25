@@ -1,23 +1,16 @@
 :fonts:
-calibri 26
-calibri 26
-calibri 17
-calibri 17
-calibri 73
-calibri 26
+cambria 34
+consolas 29
+corbel 19
+arialblack 23
+cambria 72
+corbel 27
 calibri 20
 :element offset:
 0 0
-0 0
-0 0
-0 0
-0 0
-0 0
-0 0
-0 0
-0 0
-0 0
 :crunch:
 350
-0
-55
+17
+51
+90
+67

@@ -1,5 +1,5 @@
 name:Inflict Wounds
-level:1st
+level:1
 page:253
 school:necromancy
 casting-time:1 action
