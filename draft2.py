@@ -52,7 +52,7 @@ class Layout:
     
 class Draw:
     def __init__(self):
-        self.schools = []
+        schools = []
         self.colors = {}
         self.icons = {}
 
@@ -61,18 +61,18 @@ class Draw:
         for i in range(0,8):
             line = f.readline()
             x = line.find(':')
-            self.schools.append(line[:x])
+            schools.append(line[:x])
             c = tuple([int(j) for j in line[x+1:-1].split(' ')])+(0,)
-            self.colors[self.schools[i]] = c
+            self.colors[schools[i]] = c
         f.close()
 
         #import and colorize school icons
-        a = pygame.image.load("schools.png")
+        a = pygame.image.load('schools.png')
         for i in range(0,8):
-            b = a.subsurface(pygame.Rect(400*(i%4),400*(i//4),400,400))
-            b.fill(self.colors[self.schools[i]], None, pygame.BLEND_RGBA_ADD)
-            b.set_colorkey((255,255,255))
-            self.icons[self.schools[i]] = b
+            b = a.subsurface(pygame.Rect((i%4)*400,(i//4)*400,400,400))
+            b.fill(self.colors[schools[i]], None, pygame.BLEND_ADD)
+            #b.set_colorkey((255,255,255))
+            self.icons[schools[i]] = b
 
         d = 60
         font = pygame.font.SysFont('arielblack',32)
@@ -92,10 +92,17 @@ class Draw:
         x,y = font.size('R')
         a.blit(font.render('R',1,(0,0,0)),((d-x)/2,(d-y)/2))
         self.CR.blit(a,(d+10,0))
+
+        self.components = {}
+        #import component icons
+        a = pygame.image.load('components.png')
+        keys = [' ','V','S','M']
+        for i in range(0,4):
+            b = a.subsurface(pygame.Rect(i*100,0,100,100))
+            self.components[keys[i]] = b
         
     def getLevel(self,school,level,font,d=80):
-        b = self.icons[school].copy()
-        b = pygame.transform.scale(b,(d,d))
+        b = pygame.transform.scale(self.icons[school],(d,d))
         c = font.render(level,1,(0,0,0))
         b.blit(c,((d-c.get_width())//2,(d-c.get_height())//2))
         return b
@@ -110,7 +117,12 @@ class Draw:
         return b
     
     def getComponents(self,com,d=60):
-        b = pygame.Surface((d,d))
+        b = pygame.Surface((d*len(com),d))
+        b.fill((255,255,255))
+        for i in range(0,len(com)):
+            print(com[i])
+            a = pygame.transform.scale(self.components[com[i]],(d,d))
+            b.blit(a,(i*d,0))
         return b
     
     def visualize(self,info):
