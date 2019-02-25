@@ -6,6 +6,6 @@ im.__init__()
 
 x = {'a':1,'b':2,'c':3}
 print(x)
-for j in x.items():
+for i,j in x.items():
     j += 1
 print(x)

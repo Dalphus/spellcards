@@ -39,7 +39,7 @@ class Layout:
             for j in range(0,len(self.elements[i])):
                 k = self.elements[i][j]
                 x = y = 0
-                if k[1] == 'FLUSH': x = self.elements[i][j-1][0].get_width()+10
+                if k[1] == 'FLUSH': x = self.elements[i][j-1][0].get_width()
                 elif k[1] == 'CENTER': x = (width-k[0].get_width())//2
                 elif k[1] == 'RIGHT': x = width-k[0].get_width()
                 elif k[1] == 'RELATIVE':
@@ -94,12 +94,12 @@ class Draw:
         self.CR.blit(a,(d+10,0))
 
         self.components = {}
+        key = ['V','S','M']
         #import component icons
         a = pygame.image.load('components.png')
-        keys = [' ','V','S','M']
-        for i in range(0,4):
+        for i in range(0,3):
             b = a.subsurface(pygame.Rect(i*100,0,100,100))
-            self.components[keys[i]] = b
+            self.components[key[i]] = b
         
     def getLevel(self,school,level,font,d=80):
         b = pygame.transform.scale(self.icons[school],(d,d))
@@ -117,15 +117,17 @@ class Draw:
         return b
     
     def getComponents(self,com,d=60):
-        b = pygame.Surface((d*len(com),d))
+        width = 350
+        x = (width-len(com)*d)//(len(com)+1)
+        b = pygame.Surface((width,d))
         b.fill((255,255,255))
         for i in range(0,len(com)):
-            print(com[i])
             a = pygame.transform.scale(self.components[com[i]],(d,d))
-            b.blit(a,(i*d,0))
+            b.blit(a,(x+i*(x+d),0))
         return b
     
     def visualize(self,info):
+        #parse fonts (temporary)
         font_info = [('Calibri',17),('Calibri',73),('Calibri',26)]
         font_info.append(font_info[0])
         fonts = []
@@ -144,15 +146,15 @@ class Draw:
         l.add(2,self.getRC(info['ritual'],info['concentration']),'RIGHT','CENTER')
         l.add(4,self.getComponents(info['components']),'CENTER','CENTER')#divider
         l.add(5,self.getText(info['damage'],fonts[1]))
-        l.add(5,self.getText(info['type'],fonts[2]),'FLUSH','OFFSET')
+        l.add(5,self.getText(' '+info['type'],fonts[2]),'FLUSH','OFFSET')
         l.add(6,self.wrap(info['description'],width,fonts[0]))
-        l.add(7,self.wrap(' '*34+info['higher'],width,fonts[0]),y='CENTER')
+        l.add(7,self.wrap(' '*34+info['higher'],width,fonts[0]),y='CENTER')#special bold
         l.add(7,self.getText('At Higher Levels:',fonts[3]))
         l.add(8,self.getText('PHB '+info['page']+' '*5,fonts[0]),'RIGHT','BOTTOM')
         
         return l.draw()
 
-    
+    #rename to gettext,width=0,if width==0:just return line
     def wrap(self,text,width,font):
         words = [i+' ' for i in text.split(' ')]
 
@@ -176,7 +178,7 @@ class Draw:
         return text_surface
 
     
-    def getText(self,text,font):
+    def getText(self,text,font):#replace functionality with wrap
         return font.render(text,1,(0,0,0),(255,255,255))
     
 class __main__:
