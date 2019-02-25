@@ -1,0 +1,21 @@
+:fonts:
+calibri 26
+calibri 26
+calibri 17
+calibri 17
+calibri 73
+calibri 26
+:element offset:
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+:crunch:
+0
+0

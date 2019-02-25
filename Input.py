@@ -15,9 +15,7 @@ class InputManager:
     @classmethod
     def manage_input(cls):
         if pygame.event.peek(pygame.QUIT):
-            pygame.display.quit()
-            pygame.quit()
-            sys.exit()
+            return False
         
         cls.filtered_input = [[],[],[],[],[]]
         for e in pygame.event.get():
@@ -25,7 +23,7 @@ class InputManager:
                 if e.type == cls.index[i]:
                     cls.filtered_input[i].append(e)
                     break
-        
+        return True
     #easy input retrieval. redundant yes, but convenient
     @classmethod
     def keydown(cls):
