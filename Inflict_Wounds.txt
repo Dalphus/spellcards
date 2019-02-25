@@ -5,7 +5,7 @@ school:necromancy
 casting-time:1 action
 range:Touch
 duration:Instantaneous
-components:VSM
+components:VS
 concentration:no
 ritual:no
 damage:3d10
