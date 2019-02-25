@@ -1,29 +1,27 @@
 import pygame
 from SpellCardStuff import *
 from Input import InputManager as im
-im.__init__()
+from Customize import StyleManager as sm
 pygame.init()
-
-class CardInfo:
-    def __init__(self,file):
-        self.info = {}
-        f = open(file,'r')
-        for i in range(0,14):
-            line = f.readline()
-            x = line.find(':')
-            self.info[line[:x]] = line[x+1:-1]
-        f.close()
+im.__init__()
+sm.__init__()
 
 window = pygame.display.set_mode((350,600))
 window.fill((255,255,255))
 
-card = CardInfo('Inflict_Wounds.txt')
-draw = CardDraw(350)
-draw.updateCR()
-draw.addElements(card.info)
-fancy = draw.visualize()
-window.blit(fancy,(0,0))
+CardDraw.__init__(350)
+CardDraw.updateCR()
+
+content = CardInfo('Inflict_Wounds.txt')
+style = CardLayout()
+CardDraw.addElements(style,content.info)
+
+draw = style.visualize(350)
+window.blit(draw,(0,0))
 pygame.display.flip()
 
-while True:
-    im.manage_input()
+while im.manage_input():
+    sm.update()
+
+pygame.display.quit()
+pygame.quit()
