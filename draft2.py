@@ -1,4 +1,5 @@
 import pygame
+from pygame import gfxdraw
 from Input import InputManager as im
 im.__init__()
 pygame.init()
@@ -50,44 +51,69 @@ class Layout:
         return card
     
 class Draw:
-    @classmethod
-    def getLevel(cls,school,level,font,d=80):
-        a = pygame.image.load("schools.png").convert_alpha()
-        a = pygame.transform.scale(a,(d*4,d*2))
-        b = pygame.Surface((d,d))
-        b.fill((255,255,255))
-        b.blit(a,(0,0),(d*2,d,d,d))
+    def __init__(self):
+        self.schools = []
+        self.colors = {}
+        self.icons = {}
+
+        #import colors and store school names
+        f = open('colors.txt','r')
+        for i in range(0,8):
+            line = f.readline()
+            x = line.find(':')
+            self.schools.append(line[:x])
+            c = tuple([int(j) for j in line[x+1:-1].split(' ')])+(0,)
+            self.colors[self.schools[i]] = c
+        f.close()
+
+        #import and colorize school icons
+        a = pygame.image.load("schools.png")
+        for i in range(0,8):
+            b = a.subsurface(pygame.Rect(400*(i%4),400*(i//4),400,400))
+            b.fill(self.colors[self.schools[i]], None, pygame.BLEND_RGBA_ADD)
+            b.set_colorkey((255,255,255))
+            self.icons[self.schools[i]] = b
+
+        d = 60
+        font = pygame.font.SysFont('arielblack',32)
+        self.CR = pygame.Surface((d*2+20,d))
+        self.CR.fill((255,255,255,0))
+        #draw concentration icon
+        a = pygame.Surface((d,d))
+        a.fill((255,255,255))
+        pygame.draw.polygon(a,(0,0,0),((0,d/2),(d/2,d),(d,d/2),(d/2,0)))
+        x,y = font.size('C')
+        a.blit(font.render('C',1,(255,255,255)),((d-x)/2,(d-y)/2))
+        self.CR.blit(a,(0,0))
+        #draw ritual icon
+        a = pygame.Surface((d,d))
+        a.fill((255,255,255))
+        pygame.draw.circle(a,(0,0,0),(d//2,d//2),d//2,7)
+        x,y = font.size('R')
+        a.blit(font.render('R',1,(0,0,0)),((d-x)/2,(d-y)/2))
+        self.CR.blit(a,(d+10,0))
+        
+    def getLevel(self,school,level,font,d=80):
+        b = self.icons[school].copy()
+        b = pygame.transform.scale(b,(d,d))
         c = font.render(level,1,(0,0,0))
         b.blit(c,((d-c.get_width())//2,(d-c.get_height())//2))
         return b
-    @classmethod
-    def getRC(cls,r,c,d=60):#do this without images
-        b = pygame.Surface((d*2,d))
-        b.fill((255,255,255))
-        b.set_colorkey((255,255,255))
-        a = pygame.image.load('ritual.png').convert_alpha()
-        a = pygame.transform.scale(a,(d,d))
-        b.blit(a,(0,0))
-        a = pygame.image.load('concentration.png').convert_alpha()
-        a = pygame.transform.scale(a,(d,d))
-        b.blit(a,(d,0))
-        return b
-    @classmethod
-    def getComponents(cls,c,d=60):
-        V = pygame.image.load('visual.png').convert_alpha()
-        V = pygame.transform.scale(V,(d,d))
-        S = pygame.image.load('sematic.png').convert_alpha()
-        S = pygame.transform.scale(S,(d,d))
-        M = pygame.image.load('material.png').convert_alpha()
-        M = pygame.transform.scale(M,(d,d))
-        b = pygame.Surface((3*d,d))
-        b.fill((255,255,255))
-        b.set_colorkey((255,255,255))
-        b.blit(V,(0,0));b.blit(S,(d,0));b.blit(M,(d*2,0))
+    
+    def getRC(self,rit,con,dim=(180,)*3):
+        b = self.CR.copy()
+        x,y = b.get_size()
+        if rit == 'no':
+            b.fill(dim,pygame.Rect(0,0,x//2,y),pygame.BLEND_ADD)
+        if con == 'no':
+            b.fill(dim,pygame.Rect(x//2,0,x//2,y),pygame.BLEND_ADD)
         return b
     
-    @classmethod
-    def visualize(cls,info):
+    def getComponents(self,com,d=60):
+        b = pygame.Surface((d,d))
+        return b
+    
+    def visualize(self,info):
         font_info = [('Calibri',17),('Calibri',73),('Calibri',26)]
         font_info.append(font_info[0])
         fonts = []
@@ -98,24 +124,24 @@ class Draw:
         width = 350
 
         l = Layout()
-        l.add(0,cls.getLevel(info['school'],info['level'],fonts[2]))
-        l.add(0,cls.getText(info['name'],fonts[0]),'RELATIVE','CENTER')#bigger
-        l.add(1,cls.getText('Casting Time: '+info['casting-time'],fonts[0]),y='BOTTOM')
-        l.add(2,cls.getText('Range: '+info['range'],fonts[0]))
-        l.add(3,cls.getText('Duration: '+info['duration'],fonts[0]))
-        l.add(2,cls.getRC(info['ritual'],info['concentration']),'RIGHT','CENTER')
-        l.add(4,cls.getComponents(info['components']),'CENTER','CENTER')#divider
-        l.add(5,cls.getText(info['damage'],fonts[1]))
-        l.add(5,cls.getText(info['type'],fonts[2]),'FLUSH','OFFSET')
-        l.add(6,cls.wrap(info['description'],width,fonts[0]))
-        l.add(7,cls.wrap(' '*34+info['higher'],width,fonts[0]),y='CENTER')
-        l.add(7,cls.getText('At Higher Levels:',fonts[3]))
-        l.add(8,cls.getText('PHB '+info['page']+' '*5,fonts[0]),'RIGHT','BOTTOM')
+        l.add(0,self.getLevel(info['school'],info['level'],fonts[2]))
+        l.add(0,self.getText(info['name'],fonts[0]),'RELATIVE','CENTER')#bigger
+        l.add(1,self.getText('Casting Time: '+info['casting-time'],fonts[0]),y='BOTTOM')
+        l.add(2,self.getText('Range: '+info['range'],fonts[0]))
+        l.add(3,self.getText('Duration: '+info['duration'],fonts[0]))
+        l.add(2,self.getRC(info['ritual'],info['concentration']),'RIGHT','CENTER')
+        l.add(4,self.getComponents(info['components']),'CENTER','CENTER')#divider
+        l.add(5,self.getText(info['damage'],fonts[1]))
+        l.add(5,self.getText(info['type'],fonts[2]),'FLUSH','OFFSET')
+        l.add(6,self.wrap(info['description'],width,fonts[0]))
+        l.add(7,self.wrap(' '*34+info['higher'],width,fonts[0]),y='CENTER')
+        l.add(7,self.getText('At Higher Levels:',fonts[3]))
+        l.add(8,self.getText('PHB '+info['page']+' '*5,fonts[0]),'RIGHT','BOTTOM')
         
         return l.draw()
 
-    @classmethod
-    def wrap(cls,text,width,font):
+    
+    def wrap(self,text,width,font):
         words = [i+' ' for i in text.split(' ')]
 
         line = words[0]
@@ -137,8 +163,8 @@ class Draw:
             
         return text_surface
 
-    @classmethod
-    def getText(cls,text,font):
+    
+    def getText(self,text,font):
         return font.render(text,1,(0,0,0),(255,255,255))
     
 class __main__:
@@ -148,7 +174,8 @@ class __main__:
         window.fill((255,255,255))
         
         card = CardInfo('Inflict_Wounds.txt')
-        fancy = Draw.visualize(card.info)
+        draw = Draw()
+        fancy = draw.visualize(card.info)
         window.blit(fancy,(0,0))
         pygame.display.flip()
 

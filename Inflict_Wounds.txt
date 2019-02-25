@@ -6,8 +6,8 @@ casting-time:1 action
 range:Touch
 duration:Instantaneous
 components:V S
-ritual:yes
-concentration:yes
+concentration:no
+ritual:no
 damage:3d10
 type:necrotic
 description:Make a melee spell attack against a creature you can reach. On a hit, the target takes 3d10 necrotic damage. 
