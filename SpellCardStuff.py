@@ -1,5 +1,6 @@
 import pygame
 from pygame import gfxdraw
+from Customize import StyleManager as sm
 pygame.init()
 
 class CardInfo:
@@ -82,9 +83,9 @@ class CardDraw:
             cls.components[key[i]] = b
 
     @classmethod
-    def updateCR(cls,d=55,font=None):
-        if font == None:
-            font = pygame.font.SysFont('arielblack',32)
+    def updateCR(cls):
+        d = sm.crunch[2]
+        font = pygame.font.SysFont(sm.fonts[3][0],sm.fonts[3][1])
         cls.CR = pygame.Surface((d*2+20,d))
         cls.CR.fill((255,)*3)
         #draw concentration icon
@@ -110,7 +111,7 @@ class CardDraw:
         return b
     
     @classmethod
-    def getRC(cls,rit,con,dim=(180,)*3):
+    def getCR(cls,rit,con,dim=(180,)*3):
         b = cls.CR.copy()
         x,y = b.get_size()
         if rit == 'no':
@@ -131,27 +132,26 @@ class CardDraw:
     
     @classmethod
     def addElements(cls,l,info):
-        #parse fonts (temporary)
-        font_info = [('Calibri',17),('Calibri',73),('Calibri',26)]
-        font_info.append(font_info[0])
+        #parse fonts from StyleManager
+        #eventually parse from text file
         fonts = []
-        for i in font_info:
+        for i in sm.fonts:
             fonts.append(pygame.font.SysFont(i[0],i[1]))
-        fonts[3].set_bold(True)
+        fonts[5].set_bold(True)
 
-        l.add(0,cls.getLevel(info['school'],info['level'],fonts[2]))
-        l.add(0,cls.getText(info['name'],fonts[0]),'RELATIVE','CENTER')#bigger
-        l.add(1,cls.getText('Casting Time: '+info['casting-time'],fonts[0]))
-        l.add(2,cls.getText('Range: '+info['range'],fonts[0]))
-        l.add(3,cls.getText('Duration: '+info['duration'],fonts[0]))
-        l.add(2,cls.getRC(info['ritual'],info['concentration']),'RIGHT','CENTER')
+        l.add(0,cls.getLevel(info['school'],info['level'],fonts[0]))
+        l.add(0,cls.getText(info['name'],fonts[1]),'RELATIVE','CENTER')#bigger
+        l.add(1,cls.getText('Casting Time: '+info['casting-time'],fonts[2]))
+        l.add(2,cls.getText('Range: '+info['range'],fonts[2]))
+        l.add(3,cls.getText('Duration: '+info['duration'],fonts[2]))
+        l.add(2,cls.getCR(info['ritual'],info['concentration']),'RIGHT','CENTER')
         l.add(4,cls.getComponents(info['components']),'CENTER','CENTER')
-        l.add(5,cls.getText(info['damage'],fonts[1]))
-        l.add(5,cls.getText(' '+info['type'],fonts[2]),'FLUSH','OFFSET')
-        l.add(6,cls.getText(info['description'],fonts[0]),'LEFT','BOTTOM')
-        l.add(7,cls.getText('At Higher Levels:',fonts[3]),'CENTER','BOTTOM')
-        l.add(8,cls.getText(info['higher'],fonts[0]))
-        l.add(9,cls.getText('PHB '+info['page']+' '*5,fonts[0]),'RIGHT','BOTTOM')
+        l.add(5,cls.getText(info['damage'],fonts[4]))
+        l.add(5,cls.getText(' '+info['type'],fonts[6]),'FLUSH','OFFSET')
+        l.add(6,cls.getText(info['description'],fonts[2]),'LEFT','BOTTOM')
+        l.add(7,cls.getText('At Higher Levels:',fonts[5]),'CENTER','BOTTOM')
+        l.add(8,cls.getText(info['higher'],fonts[2]))
+        l.add(9,cls.getText('PHB '+info['page'],fonts[2]),'RIGHT','BOTTOM')
 
     @classmethod
     def getText(cls,text,font,d=0):
