@@ -1,32 +1,30 @@
 import pygame
 from SpellCardStuff import *
 from Input import InputManager as im
-from Customize import StyleManager as sm
+#from GUI import *
 pygame.init()
 im.__init__()
-sm.__init__()
 
-window = pygame.display.set_mode((380,600))
+width = 450
 
-CardDraw.__init__(350)
-CardDraw.updateCR()
-
+CardDraw.__init__(width-60)
 content = CardInfo('Inflict_Wounds.txt')
 
-while im.manage_input():
-    for i in im.keydown():
-        sm.update(i.key)
-        
-        style = CardLayout()
-        CardDraw.width = sm.crunch[0]
-        CardDraw.updateCR()
-        CardDraw.addElements(style,content.info)
-        
-        window.fill(CardDraw.colors[content.info['school']])
-        draw = style.visualize(sm.crunch[0])
-        window.blit(draw,(15,15))
-        pygame.display.flip()
+style = CardLayout()
+CardDraw.addElements(style,content.info)
+draw = style.visualize(width-60)
+
+height = draw.get_height()+30
+window = pygame.display.set_mode((width,height))
+window.fill(CardDraw.colors[content.info['school']])
+window.blit(draw,(15,15))
+pygame.display.flip()
+
+while im.manage_input(): pass
 
 pygame.image.save(window,'Inflict_Wounds.jpeg')
 pygame.display.quit()
-pygame.quit()
+pygame.quit
+
+
+
