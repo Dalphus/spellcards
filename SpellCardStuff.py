@@ -47,7 +47,7 @@ class CardLayout:
                     x = (width+self.elements[i][j-1][0].get_width()-k[0].get_width())//2
                 if k[2] == 'CENTER': y = (height[i]-k[0].get_height())//2
                 elif k[2] == 'BOTTOM': y = height[i]-k[0].get_height()
-                elif k[2] == 'OFFSET': y = height[i]-k[0].get_height()-5
+                elif k[2] == 'OFFSET': y = height[i]-k[0].get_height()-9
                 a.blit(k[0],(x,sum(height[0:i])+y))
                 
         b = pygame.Surface((width+2*padding,sum(height)+2*padding))
@@ -64,18 +64,14 @@ class CardDraw:
         cls.components = {}
         cls.fonts = []
 
-        #initialize fonts
-        f = [('cambria',34),('Nodesto Caps Condensed Bold.otf',45),\
-             ('corbel',19),('arialblack 23',50),('cambria',65),\
-             ('corbel',30),('calibri',20),('corbel',17)]
+        #import fonts
+        f = [('Cambriab',34),('Nodesto Caps Condensed Bold',45),\
+             ('Corbel',19),('Arial Black',34),('Cambriab',65),\
+             ('Corbel',30),('Corbel Bold',22),('Corbel Italic',17),\
+             ('Corbel Bold Italic',19)]
         for i in f:
-            if i[0].find('.') == -1:
-                font = pygame.font.SysFont(i[0],i[1])
-            else:
-                font = pygame.font.Font(i[0],i[1])
+            font = pygame.font.Font('fonts/'+i[0]+'.ttf',i[1])
             cls.fonts.append(font)
-        cls.fonts[6].set_bold(True)
-        cls.fonts[7].set_italic(True)
         
         #import and colorize school icons
         a = pygame.image.load('schools.png')
@@ -107,14 +103,14 @@ class CardDraw:
         a.fill((255,)*3)
         pygame.draw.polygon(a,(0,0,0),((0,d/2),(d/2,d),(d,d/2),(d/2,0)))
         x,y = cls.fonts[3].size('C')
-        a.blit(cls.fonts[3].render('C',1,(255,)*3),((d-x)/2,(d-y)/2+3))
+        a.blit(cls.fonts[3].render('C',1,(255,)*3),((d-x)/2,(d-y)/2))
         cls.CR.blit(a,(0,0))
         #ritual
         a = pygame.Surface((d,d))
         a.fill((255,)*3)
         pygame.draw.circle(a,(0,0,0),(d//2,d//2),d//2,7)
         x,y = cls.fonts[3].size('R')
-        a.blit(cls.fonts[3].render('R',1,(0,0,0)),((d-x)/2,(d-y)/2+3))
+        a.blit(cls.fonts[3].render('R',1,(0,0,0)),((d-x)/2,(d-y)/2))
         cls.CR.blit(a,(d+10,0))
         
     @classmethod
@@ -156,7 +152,7 @@ class CardDraw:
         l.add(4,cls.getComponents(info['components']),'CENTER','BOTTOM')
         l.add(5,cls.getText(info['materials'],cls.fonts[7],0,(180,)*3),'RIGHT','TOP')
         l.add(6,cls.getText(info['damage'],cls.fonts[4]))
-        l.add(6,cls.getText(info['type'],cls.fonts[5]),'FLUSH','OFFSET')
+        l.add(6,cls.getText(' '+info['type'],cls.fonts[5]),'FLUSH','OFFSET')
         l.add(7,cls.getText(info['description'],cls.fonts[2],15),'CENTER','BOTTOM')
         l.add(8,cls.getText('At Higher Levels:',cls.fonts[6]),'CENTER','BOTTOM')
         l.add(9,cls.getText(info['higher'],cls.fonts[2],15),'CENTER')
@@ -165,28 +161,39 @@ class CardDraw:
     @classmethod
     def getText(cls,text,font,d=0,color=(0,0,0)):
         d = cls.width-d
-        words = [i+' ' for i in text.split(' ')]
-
-        line = words[0]
         lines = []
-        newLine = False
-        for i in words[1:]:
-            if font.size(line+i[:-1])[0] > d:
-                lines.append(line[:-1])
-                line = i
-            else: line += i
-        lines.append(line)
+        i = 0
+        while text[i:]:
+            if text[i] == '\n':
+                lines.append(text[:i])
+                text = ' '*5+text[i+1:]
+                i = 0
+            elif font.size(text[:i].strip('*'))[0] > d:
+                x = text[:i].rfind(' ')
+                lines.append(text[:x])
+                text = text[x+1:]
+                i = -1
+            i += 1
+        lines.append(text)
         #return unwrapped text if below width
         if len(lines) == 1:
-            return font.render(line,1,color)
-
+            return font.render(text,1,color)
+            
         height = font.size('Tg')[1]
         text_surface = pygame.Surface((d,len(lines)*height))
         text_surface.fill((255,)*3)
         text_surface.set_colorkey((255,)*3)
 
+        temp = 0
+        f = [font,cls.fonts[8]]
         for i in range(0,len(lines)):
-            image = font.render(lines[i],1,color)
-            text_surface.blit(image,(0,i*height))
+            x = 0
+            bold = lines[i].split('*')
+            for j in bold:
+                image = f[temp].render(j,1,color)
+                text_surface.blit(image,(x,i*height))
+                x += font.size(j)[0]
+                temp = 1-temp
+            temp = 0
             
         return text_surface
