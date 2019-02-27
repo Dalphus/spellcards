@@ -6,11 +6,14 @@ class CardInfo:
     def __init__(self,file):
         self.info = {}
         f = open(file,'r')
-        lines = f.read().split('\n')
+        lines = f.read().split(':')
         f.close()
-        for i in lines:
-            x = i.find(':')
-            self.info[i[:x]] = i[x+1:]
+
+        x = lines[0].rfind('\n')
+        for i in range(1,len(lines)):
+            name = lines[i-1][x+1:]
+            x = lines[i].rfind('\n')
+            self.info[name] = lines[i][:x]
 
 class CardLayout:
     def __init__(self):
@@ -25,7 +28,7 @@ class CardLayout:
         height = [i[0][0].get_height() for i in self.elements]
         height[0] += 10 #margin under spell level 
         height[4] += 15 #margin above components
-        height[5] = 10 #remove height of materials
+        height[5] = 15 #remove height of materials
         height[7] += 10 #margin above description
         height[8] += 15 #margin above HL header
         height[10] += 30 #margin above PHB page
@@ -166,9 +169,10 @@ class CardDraw:
 
         line = words[0]
         lines = []
+        newLine = False
         for i in words[1:]:
             if font.size(line+i[:-1])[0] > d:
-                lines.append(line)
+                lines.append(line[:-1])
                 line = i
             else: line += i
         lines.append(line)
