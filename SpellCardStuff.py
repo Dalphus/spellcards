@@ -25,7 +25,7 @@ class CardLayout:
         height = [i[0][0].get_height() for i in self.elements]
         height[0] += 10 #margin under spell level 
         height[4] += 15 #margin above components
-        height[5] -= 10 #remove height of materials
+        height[5] = 10 #remove height of materials
         height[7] += 10 #margin above description
         height[8] += 15 #margin above HL header
         height[10] += 30 #margin above PHB page
@@ -64,7 +64,7 @@ class CardDraw:
         #initialize fonts
         f = [('cambria',34),('Nodesto Caps Condensed Bold.otf',45),\
              ('corbel',19),('arialblack 23',50),('cambria',65),\
-             ('corbel',30),('calibri',20),('corbel',15)]
+             ('corbel',30),('calibri',20),('corbel',17)]
         for i in f:
             if i[0].find('.') == -1:
                 font = pygame.font.SysFont(i[0],i[1])
@@ -90,9 +90,9 @@ class CardDraw:
 
         key = ['V','S','M']
         #import component icons
-        a = pygame.image.load('components2.png')
+        a = pygame.image.load('components.png')
         for i in range(0,3):
-            b = a.subsurface(pygame.Rect(i*100,0,100,100))
+            b = a.subsurface(pygame.Rect(i*200,0,200,200))
             cls.components[key[i]] = b
 
         #draw concentration and ritual icons
@@ -157,7 +157,7 @@ class CardDraw:
         l.add(7,cls.getText(info['description'],cls.fonts[2],15),'CENTER','BOTTOM')
         l.add(8,cls.getText('At Higher Levels:',cls.fonts[6]),'CENTER','BOTTOM')
         l.add(9,cls.getText(info['higher'],cls.fonts[2],15),'CENTER')
-        l.add(10,cls.getText('PHB '+info['page'],cls.fonts[2]),'RIGHT','BOTTOM')
+        l.add(10,cls.getText('PHB '+info['page'],cls.fonts[7]),'RIGHT','BOTTOM')
 
     @classmethod
     def getText(cls,text,font,d=0,color=(0,0,0)):

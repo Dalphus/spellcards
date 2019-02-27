@@ -8,7 +8,7 @@ im.__init__()
 width = 450
 
 CardDraw.__init__(width-60)
-content = CardInfo('Inflict_Wounds.txt')
+content = CardInfo('Fireball.txt')
 
 style = CardLayout()
 CardDraw.addElements(style,content.info)
@@ -22,7 +22,7 @@ pygame.display.flip()
 
 while im.manage_input(): pass
 
-pygame.image.save(window,'Inflict_Wounds.jpeg')
+pygame.image.save(window,'Fireball.jpeg')
 pygame.display.quit()
 pygame.quit
 
