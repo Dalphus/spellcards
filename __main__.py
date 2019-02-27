@@ -1,7 +1,7 @@
 import pygame
 from SpellCardStuff import *
 from Input import InputManager as im
-#from GUI import *
+
 pygame.init()
 im.__init__()
 

@@ -2,6 +2,13 @@ import pygame
 from pygame import gfxdraw
 pygame.init()
 
+def hasKey(d,*args):
+    for key in args:
+        if d.setdefault(key) != None:
+            return True
+    return False
+    
+
 class CardInfo:
     def __init__(self,file):
         self.info = {}
@@ -17,10 +24,11 @@ class CardInfo:
 
 class CardLayout:
     def __init__(self):
-        self.elements = [[]]
+        self.blank = pygame.Surface((0,0))
+        self.elements = [[(self.blank,'LEFT','TOP')]]*11
     def add(self,level,thing,x='LEFT',y='TOP'):
-        if level >= len(self.elements):
-            self.elements.append([(thing,x,y)])
+        if self.elements[level][0][0] == self.blank:
+            self.elements[level] = [(thing,x,y)]
         else:
             self.elements[level].append((thing,x,y))
 
@@ -29,8 +37,8 @@ class CardLayout:
         height[0] += 10 #margin under spell level 
         height[4] += 15 #margin above components
         height[5] = 15 #remove height of materials
-        height[7] += 10 #margin above description
-        height[8] += 15 #margin above HL header
+        if self.elements[8][0][0] != self.blank:
+            height[8] += 15 #margin above HL header
         height[10] += 30 #margin above PHB page
         
         a = pygame.Surface((width,sum(height)))
@@ -138,7 +146,6 @@ class CardDraw:
         for i in range(0,len(com)):
             a = pygame.transform.scale(cls.components[com[i]],(d,d))
             b.blit(a,(x+i*(x+d),0))
-        
         return b
     
     @classmethod
@@ -148,15 +155,19 @@ class CardDraw:
         l.add(1,cls.getText('Casting Time: '+info['casting-time'],cls.fonts[2]))
         l.add(2,cls.getText('Range: '+info['range'],cls.fonts[2]))
         l.add(3,cls.getText('Duration: '+info['duration'],cls.fonts[2]))
-        l.add(2,cls.getCR(info['ritual'],info['concentration']),'RIGHT','CENTER')
+        if hasKey(info,'ritual','concentration'):
+            l.add(2,cls.getCR(info['ritual'],info['concentration']),'RIGHT','CENTER')
         l.add(4,cls.getComponents(info['components']),'CENTER','BOTTOM')
-        l.add(5,cls.getText(info['materials'],cls.fonts[7],0,(180,)*3),'RIGHT','TOP')
-        l.add(6,cls.getText(info['damage'],cls.fonts[4]))
-        l.add(6,cls.getText(' '+info['type'],cls.fonts[5]),'FLUSH','OFFSET')
+        if hasKey(info,'materials'):
+            l.add(5,cls.getText(info['materials'],cls.fonts[7],0,(180,)*3),'RIGHT','TOP')
+        if hasKey(info,'damage'):
+            l.add(6,cls.getText(info['damage'],cls.fonts[4]))
+            l.add(6,cls.getText(' '+info['type'],cls.fonts[5]),'FLUSH','OFFSET')
         l.add(7,cls.getText(info['description'],cls.fonts[2],15),'CENTER','BOTTOM')
-        l.add(8,cls.getText('At Higher Levels:',cls.fonts[6]),'CENTER','BOTTOM')
-        l.add(9,cls.getText(info['higher'],cls.fonts[2],15),'CENTER')
-        l.add(10,cls.getText('PHB '+info['page'],cls.fonts[7]),'RIGHT','BOTTOM')
+        if hasKey(info,'higher'):
+            l.add(8,cls.getText('At Higher Levels:',cls.fonts[6]),'CENTER','BOTTOM')
+            l.add(9,cls.getText(info['higher'],cls.fonts[2],15),'CENTER')
+        l.add(10,cls.getText(info['page'],cls.fonts[7]),'RIGHT','BOTTOM')
 
     @classmethod
     def getText(cls,text,font,d=0,color=(0,0,0)):
