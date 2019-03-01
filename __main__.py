@@ -6,7 +6,7 @@ pygame.init()
 im.__init__()
 
 width = 450
-name = 'Inflict_Wounds'
+name = 'Fireball'
 
 CardDraw.__init__(width-60)
 content = CardInfo(name+'.txt')

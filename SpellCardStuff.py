@@ -1,4 +1,4 @@
-import pygame
+import pygame, re
 from pygame import gfxdraw
 pygame.init()
 
@@ -34,7 +34,7 @@ class CardLayout:
 
     def visualize(self,width,padding=15):
         height = [i[0][0].get_height() for i in self.elements]
-        height[0] += 10 #margin under spell level 
+        height[0] += 10 #margin under spell level
         height[4] += 15 #margin above components
         height[5] = 15 #remove height of materials
         if self.elements[8][0][0] != self.blank:
@@ -157,6 +157,8 @@ class CardDraw:
         l.add(3,cls.getText('Duration: '+info['duration'],cls.fonts[2]))
         if hasKey(info,'ritual','concentration'):
             l.add(2,cls.getCR(info['ritual'],info['concentration']),'RIGHT','CENTER')
+        else:
+            l.add(2,cls.getCR('no','no'),'RIGHT','CENTER')
         l.add(4,cls.getComponents(info['components']),'CENTER','BOTTOM')
         if hasKey(info,'materials'):
             l.add(5,cls.getText(info['materials'],cls.fonts[7],0,(180,)*3),'RIGHT','TOP')
@@ -173,6 +175,11 @@ class CardDraw:
     def getText(cls,text,font,d=0,color=(0,0,0)):
         d = cls.width-d
         lines = []
+        for i in text.split('\n'):
+            x = i.split(' ')
+            lines.append(x)
+        
+        
         i = 0
         while text[i:]:
             if text[i] == '\n':
