@@ -1,29 +1,22 @@
-import pygame
+import pygame,os
 from SpellCardStuff import *
-from Input import InputManager as im
-
 pygame.init()
-im.__init__()
 
 width = 450
-name = 'Fireball'
-
 CardDraw.__init__(width-60)
-content = CardInfo(name+'.txt')
 
-style = CardLayout()
-CardDraw.addElements(style,content.info)
-draw = style.visualize(width-60)
+for filename in os.listdir('SpellData'):
+    name = filename[:filename.rfind('.')]
+    content = CardInfo('SpellData/'+name+'.txt')
 
-height = draw.get_height()+30
-window = pygame.display.set_mode((width,height))
-window.fill(CardDraw.colors[content.info['school']])
-window.blit(draw,(15,15))
-pygame.display.flip()
+    style = CardLayout()
+    CardDraw.addElements(style,content.info)
+    fancy = style.visualize(width-60)
 
-while im.manage_input(): pass
+    card = pygame.Surface((width,fancy.get_height()+30))
+    card.fill(CardDraw.colors[content.info['school']])
+    card.blit(fancy,(15,15))
 
-pygame.image.save(window,name+'.jpeg')
-pygame.display.quit()
-pygame.quit
+    pygame.image.save(card,name+'.jpeg')
 
+pygame.quit()

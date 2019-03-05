@@ -1,26 +1,19 @@
-import pygame
+import pygame, re
 from pygame import gfxdraw
 pygame.init()
-
-def hasKey(d,*args):
-    for key in args:
-        if d.setdefault(key) != None:
-            return True
-    return False
-    
 
 class CardInfo:
     def __init__(self,file):
         self.info = {}
         f = open(file,'r')
-        lines = f.read().split(':')
+        lines = re.split('(?<!\\\):',f.read())
         f.close()
 
         x = lines[0].rfind('\n')
         for i in range(1,len(lines)):
             name = lines[i-1][x+1:]
             x = lines[i].rfind('\n')
-            self.info[name] = lines[i][:x]
+            self.info[name] = lines[i][:x].replace('\\','')
 
 class CardLayout:
     def __init__(self):
@@ -37,6 +30,7 @@ class CardLayout:
         height[0] += 10 #margin under spell level
         height[4] += 15 #margin above components
         height[5] = 15 #remove height of materials
+        height[7] += 15
         if self.elements[8][0][0] != self.blank:
             height[8] += 15 #margin above HL header
         height[10] += 30 #margin above PHB page
@@ -129,12 +123,12 @@ class CardDraw:
         return b
     
     @classmethod
-    def getCR(cls,rit,con,dim=(220,)*3):
+    def getCR(cls,con,rit,dim=(220,)*3):
         b = cls.CR.copy()
         x,y = b.get_size()
-        if rit == 'no':
-            b.fill(dim,pygame.Rect(0,0,x//2,y),pygame.BLEND_ADD)
         if con == 'no':
+            b.fill(dim,pygame.Rect(0,0,x//2,y),pygame.BLEND_ADD)
+        if rit == 'no':
             b.fill(dim,pygame.Rect(x//2,0,x//2,y),pygame.BLEND_ADD)
         return b
     
@@ -155,18 +149,18 @@ class CardDraw:
         l.add(1,cls.getText('Casting Time: '+info['casting-time'],cls.fonts[2]))
         l.add(2,cls.getText('Range: '+info['range'],cls.fonts[2]))
         l.add(3,cls.getText('Duration: '+info['duration'],cls.fonts[2]))
-        if hasKey(info,'ritual','concentration'):
-            l.add(2,cls.getCR(info['ritual'],info['concentration']),'RIGHT','CENTER')
-        else:
-            l.add(2,cls.getCR('no','no'),'RIGHT','CENTER')
+        C=R='no'
+        if info.setdefault('concentration') != None: C = info['concentration']
+        if info.setdefault('ritual') != None: R = info['ritual']
+        l.add(2,cls.getCR(C,R),'RIGHT','CENTER')
         l.add(4,cls.getComponents(info['components']),'CENTER','BOTTOM')
-        if hasKey(info,'materials'):
+        if info.setdefault('materials') != None:
             l.add(5,cls.getText(info['materials'],cls.fonts[7],0,(180,)*3),'RIGHT','TOP')
-        if hasKey(info,'damage'):
+        if info.setdefault('damage') != None:
             l.add(6,cls.getText(info['damage'],cls.fonts[4]))
             l.add(6,cls.getText(' '+info['type'],cls.fonts[5]),'FLUSH','OFFSET')
         l.add(7,cls.getText(info['description'],cls.fonts[2],15),'CENTER','BOTTOM')
-        if hasKey(info,'higher'):
+        if info.setdefault('higher'):
             l.add(8,cls.getText('At Higher Levels:',cls.fonts[6]),'CENTER','BOTTOM')
             l.add(9,cls.getText(info['higher'],cls.fonts[2],15),'CENTER')
         l.add(10,cls.getText(info['page'],cls.fonts[7]),'RIGHT','BOTTOM')
