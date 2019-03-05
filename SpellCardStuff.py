@@ -1,4 +1,4 @@
-import pygame, re
+import pygame
 from pygame import gfxdraw
 pygame.init()
 
@@ -174,26 +174,24 @@ class CardDraw:
     @classmethod
     def getText(cls,text,font,d=0,color=(0,0,0)):
         d = cls.width-d
+        #format words
+        words = []
+        for line in text.splitlines():
+            words.append([i+' ' for i in line.split(' ')])
+        for i in range(1,len(words)):
+            words[i][0] = ' '*5+words[i][0]
+        
         lines = []
-        for i in text.split('\n'):
-            x = i.split(' ')
-            lines.append(x)
-        
-        
-        i = 0
-        while text[i:]:
-            if text[i] == '\n':
-                lines.append(text[:i])
-                text = ' '*5+text[i+1:]
-                i = 0
-            elif font.size(text[:i].strip('*'))[0] > d:
-                x = text[:i].rfind(' ')
-                lines.append(text[:x])
-                text = text[x+1:]
-                i = -1
-            i += 1
-        lines.append(text)
-        #return unwrapped text if below width
+        line = ''
+        for i in words:
+            for j in i:
+                if font.size(line.strip('*')+j.strip('*')[:-1])[0] > d:
+                    lines.append(line)
+                    line = j
+                else: line += j
+            lines.append(line)
+            line = ''
+        #return unwrapped text if only one line
         if len(lines) == 1:
             return font.render(text,1,color)
             
@@ -201,16 +199,15 @@ class CardDraw:
         text_surface = pygame.Surface((d,len(lines)*height))
         text_surface.fill((255,)*3)
         text_surface.set_colorkey((255,)*3)
-
-        temp = 0
         f = [font,cls.fonts[8]]
+        temp = 0
         for i in range(0,len(lines)):
             x = 0
             bold = lines[i].split('*')
             for j in bold:
                 image = f[temp].render(j,1,color)
                 text_surface.blit(image,(x,i*height))
-                x += font.size(j)[0]
+                x += f[temp].size(j)[0]
                 temp = 1-temp
             temp = 0
             
