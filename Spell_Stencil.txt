@@ -1,0 +1,15 @@
+name:
+level:
+school:
+casting-time:
+range:
+duration:
+concentration:yes
+ritual:yes
+components:VSM
+materials:
+damage:
+type:
+description:
+higher:
+page:
