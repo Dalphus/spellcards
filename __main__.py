@@ -2,7 +2,7 @@ import pygame,os
 from SpellCardStuff import *
 pygame.init()
 
-width = 450
+width = 470
 CardDraw.__init__(width-60)
 
 for filename in os.listdir('SpellData'):

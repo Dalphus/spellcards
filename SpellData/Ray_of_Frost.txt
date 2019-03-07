@@ -1,0 +1,12 @@
+name:Ray of Frost
+level:0
+school:evocation
+casting-time:1 action
+range:60 feet
+duration:Instantaneous
+components:VS
+damage:1d8
+type:cold
+description:A frigid beam of blue-white light streaks toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 1d8 cold damage, and its speed is reduced by 10 feet until the start of your next turn.
+higher:The spell's damage increases by 1d8 when you reach 5th level, 11th level, and 17th level.
+page:PHB idk
